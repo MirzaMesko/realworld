@@ -7,7 +7,7 @@ function header() {
         <a class="navbar-brand" href="index.html">conduit</a>
         <ul class="nav navbar-nav pull-xs-right">
           <li class="nav-item">
-            <a class="nav-link active" href="">Home</a>
+            <a class="nav-link active" href="/">Home</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="">
@@ -20,7 +20,7 @@ function header() {
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="">Sign up</a>
+            <a class="nav-link" href="/login">Sign up</a>
           </li>
         </ul>
       </div>
