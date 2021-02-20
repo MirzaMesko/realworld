@@ -1,26 +1,27 @@
 import React from 'react';
+import { NavLink as RouterLink } from 'react-router-dom';
 
 function header() {
     return (
-        <nav class="navbar navbar-light">
-      <div class="container">
-        <a class="navbar-brand" href="index.html">conduit</a>
-        <ul class="nav navbar-nav pull-xs-right">
-          <li class="nav-item">
-            <a class="nav-link active" href="/">Home</a>
+        <nav className="navbar navbar-light">
+      <div className="container">
+        <RouterLink className="navbar-brand" to="index.html">conduit</RouterLink>
+        <ul className="nav navbar-nav pull-xs-right">
+          <li className="nav-item">
+            <RouterLink className="nav-link active" to="/">Home</RouterLink>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="">
-              <i class="ion-compose"></i>&nbsp;New Post
-            </a>
+          <li className="nav-item">
+            <RouterLink className="nav-link" to="">
+              <i className="ion-compose"></i>&nbsp;New Post
+            </RouterLink>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="">
-              <i class="ion-gear-a"></i>&nbsp;Settings
-            </a>
+          <li className="nav-item">
+            <RouterLink className="nav-link" to="">
+              <i className="ion-gear-a"></i>&nbsp;Settings
+            </RouterLink>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/register">Sign up</a>
+          <li className="nav-item">
+            <RouterLink className="nav-link" to="/register">Sign up</RouterLink>
           </li>
         </ul>
       </div>
