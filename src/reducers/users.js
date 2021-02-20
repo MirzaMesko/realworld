@@ -1,5 +1,4 @@
-import { REGISTER_NEW_USER } from '../actions/users';
-import { LOGIN_SUCCESS } from '../actions/users';
+import { REGISTER_NEW_USER, LOG_OUT, LOGIN_SUCCESS } from '../actions/users';
 
 const initialState = {
     token: '',
@@ -19,6 +18,13 @@ const reducer = (state = initialState, action) => {
           ...state,
           token: action.token,
           user: action.user,
+        };
+      }
+      if (action.type === LOG_OUT) {
+        return {
+          ...state,
+          user: {},
+          token: '',
         };
       }
     return state;
