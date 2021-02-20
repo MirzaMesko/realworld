@@ -2,6 +2,7 @@ const axios = require('axios');
 
 export const REGISTER_NEW_USER = 'REGISTER_NEW_USER';
 export const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
+export const LOG_OUT = 'LOG_OUT';
 
 export function registrationSuccess(token, user) {
     return {
@@ -16,6 +17,41 @@ export function registrationSuccess(token, user) {
       type: LOGIN_SUCCESS,
       token,
       user,
+    };
+  }
+
+  export function logout() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('expirationDate');
+    localStorage.removeItem('user');
+    return {
+      type: LOG_OUT,
+    };
+  }
+  
+  export function checkAuthTimeout(expirationTime) {
+    return (dispatch) => {
+      setTimeout(() => {
+        dispatch(logout());
+      }, expirationTime * 1000);
+    };
+  }
+  
+  export function authCheckState() {
+    return (dispatch) => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        dispatch(logout());
+      } else {
+        const expirationDate = new Date(localStorage.getItem('expirationDate'));
+        if (expirationDate >= new Date()) {
+          const user = localStorage.getItem('user');
+          dispatch(loginSuccess(token, user));
+          dispatch(checkAuthTimeout((expirationDate.getTime() - new Date().getTime()) / 1000));
+        } else {
+          dispatch(logout());
+        }
+      }
     };
   }
 
