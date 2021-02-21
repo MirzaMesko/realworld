@@ -7,12 +7,14 @@ import Footer from "./components/Footer";
 import Login from "./components/Login";
 import Register from './components/Register';
 import { logout, authCheckState } from './actions/users';
+import { getArticles } from './actions/articles';
 
 function App(props) {
-  const { token, onLogout, onTryAutoSignup } = props;
+  const { token, onLogout, onTryAutoSignup, onGetArticles, articles } = props;
 
   React.useEffect(() => {
     onTryAutoSignup();
+    onGetArticles();
   }, [token]);
   return (
     <div>
@@ -28,12 +30,14 @@ function App(props) {
 }
 
 const mapStateToProps = (state) => ({
-  token: state.token,
+  token: state.users.token,
+  articles: state.users.articles
 });
 
 const mapDispatchToProps = (dispatch) => ({
   onLogout: () => dispatch(logout()),
   onTryAutoSignup: () => dispatch(authCheckState()),
+  onGetArticles: () => dispatch(getArticles())
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);
