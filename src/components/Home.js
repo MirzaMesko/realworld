@@ -32,7 +32,7 @@ function Home(props) {
               </ul>
             </div>
             {articles.map((article) => {
-              let date = Date(article.createdAt);
+              let date = new Date(article.createdAt);
               return (
                 <div className="article-preview">
                   <div className="article-meta">
@@ -43,7 +43,7 @@ function Home(props) {
                       <a href="" className="author">
                         {article.author.username}
                       </a>
-                      <span className="date">{date}</span>
+                      <span className="date">{date.toDateString()}</span>
                     </div>
                     <button className="btn btn-outline-primary btn-sm pull-xs-right">
                       <i className="ion-heart"></i> {article.favoritesCount}
