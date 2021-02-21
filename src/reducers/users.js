@@ -5,7 +5,7 @@ const initialState = {
     user: {}
 }
 
-const reducer = (state = initialState, action) => {
+const users = (state = initialState, action) => {
     if (action.type === REGISTER_NEW_USER) {
         return {
           ...state,
@@ -30,4 +30,4 @@ const reducer = (state = initialState, action) => {
     return state;
 }
 
-export default reducer;
+export default users;
