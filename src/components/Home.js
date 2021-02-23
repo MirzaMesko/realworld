@@ -1,10 +1,15 @@
 import React, { useState } from "react";
 import { connect } from "react-redux";
 import { NavLink as RouterLink } from "react-router-dom";
+import { getArticles } from "../actions/articles";
+import Article from './Article';
 
 function Home(props) {
-  const { articles } = props;
+  const { articles, onGetArticle, token, tags } = props;
 
+  React.useEffect(() => {
+    onGetArticle();
+  }, []);
   return (
     <div className="home-page">
       <div className="banner">
@@ -19,74 +24,31 @@ function Home(props) {
           <div className="col-md-9">
             <div className="feed-toggle">
               <ul className="nav nav-pills outline-active">
+                {token ?
                 <li className="nav-item">
-                  <a className="nav-link disabled" href="">
-                    Your Feed
-                  </a>
-                </li>
+                <RouterLink className="nav-link disabled" to="">
+                  Your Feed
+                </RouterLink>
+              </li>
+              : null }
                 <li className="nav-item">
-                  <a className="nav-link active" href="">
+                  <RouterLink className="nav-link active" to={"/"} onClick={() => onGetArticle()}>
                     Global Feed
-                  </a>
+                  </RouterLink>
                 </li>
               </ul>
             </div>
-            {articles.map((article) => {
-              let date = new Date(article.createdAt);
-              return (
-                <div className="article-preview">
-                  <div className="article-meta">
-                    <a href="profile.html">
-                      <img src={article.author.image} />
-                    </a>
-                    <div className="info">
-                      <a href="" className="author">
-                        {article.author.username}
-                      </a>
-                      <span className="date">{date.toDateString()}</span>
-                    </div>
-                    <button className="btn btn-outline-primary btn-sm pull-xs-right">
-                      <i className="ion-heart"></i> {article.favoritesCount}
-                    </button>
-                  </div>
-                  <a href="" className="preview-link">
-                    <h1>{article.title}</h1>
-                    <p>{article.description}</p>
-                    <span>Read more...</span>
-                  </a>
-                </div>
-              );
-            })}
+             <Article articles={articles} onGetArticle={onGetArticle} />
           </div>
           <div className="col-md-3">
             <div className="sidebar">
               <p>Popular Tags</p>
-
               <div className="tag-list">
-                <a href="" className="tag-pill tag-default">
-                  programming
-                </a>
-                <a href="" className="tag-pill tag-default">
-                  javascript
-                </a>
-                <a href="" className="tag-pill tag-default">
-                  emberjs
-                </a>
-                <a href="" className="tag-pill tag-default">
-                  angularjs
-                </a>
-                <a href="" className="tag-pill tag-default">
-                  react
-                </a>
-                <a href="" className="tag-pill tag-default">
-                  mean
-                </a>
-                <a href="" className="tag-pill tag-default">
-                  node
-                </a>
-                <a href="" className="tag-pill tag-default">
-                  rails
-                </a>
+                {tags.map(tag => {
+                    return <RouterLink to="" className="tag-pill tag-default" onClick={() => onGetArticle(`/?tag=${tag}`)}>
+                    {tag}
+                  </RouterLink>
+                })} 
               </div>
             </div>
           </div>
@@ -98,6 +60,12 @@ function Home(props) {
 
 const mapStateToProps = (state) => ({
   articles: state.articles.articles,
+  token: state.users.token,
+  tags: state.articles.tags
 });
 
-export default connect(mapStateToProps)(Home);
+const mapDispatchToprops = dispatch => ({
+  onGetArticle: (param) => dispatch(getArticles(param))
+})
+
+export default connect(mapStateToProps, mapDispatchToprops)(Home);
