@@ -6,15 +6,18 @@ import Home from "./components/Home";
 import Footer from "./components/Footer";
 import Login from "./components/Login";
 import Register from './components/Register';
+import SingleArticle from './components/SingleArticle';
+import Profile from './components/Profile';
 import { logout, authCheckState } from './actions/users';
-import { getArticles } from './actions/articles';
+import { getArticles, getTags } from './actions/articles';
 
 function App(props) {
-  const { token, onLogout, onTryAutoSignup, onGetArticles, articles } = props;
+  const { token, onLogout, onTryAutoSignup, onGetArticles, onGetTags} = props;
 
   React.useEffect(() => {
     onTryAutoSignup();
     onGetArticles();
+    onGetTags();
   }, [token]);
   return (
     <div>
@@ -22,6 +25,8 @@ function App(props) {
       <Switch>
         <Route path="/login" component={Login} />
         <Route path="/register" component={Register} />
+        <Route path="/@:id" exact component={Profile} />
+        <Route path="/article/:id" component={SingleArticle} />
         <Route path="/" exact component={Home} />
       </Switch>
       <Footer />
@@ -37,7 +42,8 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => ({
   onLogout: () => dispatch(logout()),
   onTryAutoSignup: () => dispatch(authCheckState()),
-  onGetArticles: () => dispatch(getArticles())
+  onGetArticles: (param) => dispatch(getArticles(param)),
+  onGetTags: () => dispatch(getTags())
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);
