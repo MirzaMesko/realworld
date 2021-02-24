@@ -27,7 +27,6 @@ export function getArticles(param) {
       axios
         .get(url)
         .then((response) => {
-            console.log(response.data.articles)
           dispatch(getArticlesSuccess(response.data.articles));
         })
         .catch((error) => {
@@ -41,8 +40,21 @@ export function getTags() {
       axios
         .get(url)
         .then((response) => {
-            console.log(response.data.tags)
           dispatch(getTagsSuccess(response.data.tags));
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+}
+
+export function getFeed(token) {
+  let url = `https://conduit.productionready.io/api/articles/feed`;
+  const headers = { Authorization: `Token ${token}` };
+    return (dispatch) =>
+      axios
+        .get(url, { headers })
+        .then((response) => {
+          dispatch(getArticlesSuccess(response.data.articles));
         })
         .catch((error) => {
           console.log(error);
