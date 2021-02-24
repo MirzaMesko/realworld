@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { connect } from "react-redux";
 import { NavLink as RouterLink } from "react-router-dom";
-import { getArticles } from "../actions/articles";
+import { getArticles, getFeed } from "../actions/articles";
 import Article from './Article';
 
 function Home(props) {
-  const { articles, onGetArticle, token, tags } = props;
+  const { articles, onGetArticle, token, tags, onGetFeed } = props;
+  const [tag, setTag] = useState('');
 
   React.useEffect(() => {
     onGetArticle();
@@ -26,16 +27,23 @@ function Home(props) {
               <ul className="nav nav-pills outline-active">
                 {token ?
                 <li className="nav-item">
-                <RouterLink className="nav-link disabled" to="">
+                <RouterLink className="nav-link disabled" to="" onClick={() => onGetFeed(token).then(() => setTag(''))} >
                   Your Feed
                 </RouterLink>
               </li>
               : null }
                 <li className="nav-item">
-                  <RouterLink className="nav-link active" to={"/"} onClick={() => onGetArticle()}>
+                  <RouterLink className="nav-link active" to={"/"} onClick={() => onGetArticle().then(() => setTag(''))}>
                     Global Feed
                   </RouterLink>
                 </li>
+                {tag ?
+              <li className="nav-item">
+              <RouterLink className="nav-link active" to="" >
+                # {tag}
+              </RouterLink>
+            </li>  
+              : null}
               </ul>
             </div>
              <Article articles={articles} onGetArticle={onGetArticle} />
@@ -45,7 +53,7 @@ function Home(props) {
               <p>Popular Tags</p>
               <div className="tag-list">
                 {tags.map(tag => {
-                    return <RouterLink to="" className="tag-pill tag-default" onClick={() => onGetArticle(`/?tag=${tag}`)}>
+                    return <RouterLink to="" className="tag-pill tag-default" onClick={() => onGetArticle(`/?tag=${tag}`).then(() => setTag(tag))}>
                     {tag}
                   </RouterLink>
                 })} 
@@ -65,7 +73,8 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToprops = dispatch => ({
-  onGetArticle: (param) => dispatch(getArticles(param))
+  onGetArticle: (param) => dispatch(getArticles(param)),
+  onGetFeed: (token) => dispatch(getFeed(token))
 })
 
 export default connect(mapStateToProps, mapDispatchToprops)(Home);
