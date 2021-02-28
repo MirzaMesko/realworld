@@ -10,20 +10,20 @@ function Header(props) {
         { token ? 
         <ul className="nav navbar-nav pull-xs-right">
         <li className="nav-item">
-          <RouterLink className="nav-link active" to="/">Home</RouterLink>
+          <RouterLink className="nav-link" to="/">Home</RouterLink>
         </li>
         <li className="nav-item">
-          <RouterLink className="nav-link" to="">
+          <RouterLink className="nav-link" to="/editor">
             <i className="ion-compose"></i>&nbsp;New Post
           </RouterLink>
         </li>
         <li className="nav-item">
-          <RouterLink className="nav-link" to="">
+          <RouterLink className="nav-link" to="/settings">
             <i className="ion-gear-a"></i>&nbsp;Settings
           </RouterLink>
         </li>
         <li className="nav-item">
-          <RouterLink className="nav-link" to="/" onClick={onLogout}>Log out</RouterLink>
+          <RouterLink className="nav-link" to="/login" onClick={onLogout}>Log out</RouterLink>
         </li>
       </ul>
       : 
