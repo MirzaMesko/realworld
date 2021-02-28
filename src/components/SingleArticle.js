@@ -1,32 +1,40 @@
 import React, { useState } from "react";
 import { connect } from "react-redux";
+import { getComments } from '../actions/articles'; 
 
 function SingleArticle(props) {
-    const { articles } = props;
+    const { articles, match, onGetComments, token, comments } = props;
+
+    let article = articles.filter(item => `:${item.slug}` == match.params.id);
+    console.log(match.params.id, 'articles: ', articles, article);
+
+    React.useEffect(() => {
+        onGetComments(token, match.params.id.slice(1))
+    }, [match.params.id])
     return (
         <div className="article-page">
 
         <div className="banner">
           <div className="container">
-      
-            <h1>How to build webapps that scale</h1>
+            
+            <h1>{article[0].title}</h1>
       
             <div className="article-meta">
-              <a href=""><img src="http://i.imgur.com/Qr71crq.jpg" /></a>
+              <a href=""><img src={article[0].author.image} /></a>
               <div className="info">
-                <a href="" className="author">Eric Simons</a>
-                <span className="date">January 20th</span>
+                <a href="" className="author">{article[0].author.username}</a>
+                <span className="date">{new Date(article[0].createdAt).toDateString()}</span>
               </div>
               <button className="btn btn-sm btn-outline-secondary">
                 <i className="ion-plus-round"></i>
                 &nbsp;
-                Follow Eric Simons <span className="counter">(10)</span>
+                Follow {article[0].author.username} <span className="counter">(10)</span>
               </button>
               &nbsp;&nbsp;
               <button className="btn btn-sm btn-outline-primary">
                 <i className="ion-heart"></i>
                 &nbsp;
-                Favorite Post <span className="counter">(29)</span>
+                Favorite Post <span className="counter">({article[0].favoritesCount})</span>
               </button>
             </div>
       
@@ -38,36 +46,13 @@ function SingleArticle(props) {
           <div className="row article-content">
             <div className="col-md-12">
               <p>
-              Web development technologies have evolved at an incredible clip over the past few years.
+              {article[0].description}
               </p>
-              <h2 id="introducing-ionic">Introducing RealWorld.</h2>
-              <p>It's a great solution for learning how other frameworks work.</p>
+              <h2 id="introducing-ionic">{article[0].title}</h2>
+              <p>{article[0].body}</p>
             </div>
           </div>
-      
           <hr />
-      
-          <div className="article-actions">
-            <div className="article-meta">
-              <a href="profile.html"><img src="http://i.imgur.com/Qr71crq.jpg" /></a>
-              <div className="info">
-                <a href="" className="author">Eric Simons</a>
-                <span className="date">January 20th</span>
-              </div>
-      
-              <button className="btn btn-sm btn-outline-secondary">
-                <i className="ion-plus-round"></i>
-                &nbsp;
-                Follow Eric Simons <span className="counter">(10)</span>
-              </button>
-              &nbsp;
-              <button className="btn btn-sm btn-outline-primary">
-                <i className="ion-heart"></i>
-                &nbsp;
-                Favorite Post <span className="counter">(29)</span>
-              </button>
-            </div>
-          </div>
       
           <div className="row">
       
@@ -78,44 +63,30 @@ function SingleArticle(props) {
                   <textarea className="form-control" placeholder="Write a comment..." rows="3"></textarea>
                 </div>
                 <div className="card-footer">
-                  <img src="http://i.imgur.com/Qr71crq.jpg" className="comment-author-img" />
+                  <img src={article[0].author.image} className="comment-author-img" />
                   <button className="btn btn-sm btn-primary">
                    Post Comment
                   </button>
                 </div>
               </form>
-              
-              <div className="card">
-                <div className="card-block">
-                  <p className="card-text">With supporting text below as a natural lead-in to additional content.</p>
-                </div>
-                <div className="card-footer">
-                  <a href="" className="comment-author">
-                    <img src="http://i.imgur.com/Qr71crq.jpg" className="comment-author-img" />
-                  </a>
-                  &nbsp;
-                  <a href="" className="comment-author">Jacob Schmidt</a>
-                  <span className="date-posted">Dec 29th</span>
-                </div>
-              </div>
-      
-              <div className="card">
-                <div className="card-block">
-                  <p className="card-text">With supporting text below as a natural lead-in to additional content.</p>
-                </div>
-                <div className="card-footer">
-                  <a href="" className="comment-author">
-                    <img src="http://i.imgur.com/Qr71crq.jpg" className="comment-author-img" />
-                  </a>
-                  &nbsp;
-                  <a href="" className="comment-author">Jacob Schmidt</a>
-                  <span className="date-posted">Dec 29th</span>
-                  <span className="mod-options">
-                    <i className="ion-edit"></i>
-                    <i className="ion-trash-a"></i>
-                  </span>
-                </div>
-              </div>
+
+              {comments && comments.map(comment => {
+                  return (
+                    <div className="card" key={comment.id}>
+                    <div className="card-block">
+                      <p className="card-text">{comment.body}</p>
+                    </div>
+                    <div className="card-footer">
+                      <a href="" className="comment-author">
+                        <img src={comment.author.image} className="comment-author-img" />
+                      </a>
+                      &nbsp;
+                      <a href="" className="comment-author">{comment.author.username}</a>
+                      <span className="date-posted">{new Date(comment.createdAt).toDateString()}</span>
+                    </div>
+                  </div>
+                  )
+              })}
               
             </div>
       
@@ -129,6 +100,12 @@ function SingleArticle(props) {
 
 const mapStateToProps = (state) => ({
     articles: state.articles.articles,
+    token: state.users.token,
+    comments: state.articles.comments
   });
 
-export default connect(mapStateToProps)(SingleArticle);
+  const mapDispatchToProps = dispatch => ({
+    onGetComments: (token, slug) => dispatch(getComments(token, slug))
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(SingleArticle);

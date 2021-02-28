@@ -27,19 +27,19 @@ function Home(props) {
               <ul className="nav nav-pills outline-active">
                 {token ?
                 <li className="nav-item">
-                <RouterLink className="nav-link disabled" to="" onClick={() => onGetFeed(token).then(() => setTag(''))} >
+                <RouterLink className="nav-link" to="" onClick={() => onGetFeed(token).then(() => setTag(''))} >
                   Your Feed
                 </RouterLink>
               </li>
               : null }
                 <li className="nav-item">
-                  <RouterLink className="nav-link active" to={"/"} onClick={() => onGetArticle().then(() => setTag(''))}>
+                  <RouterLink className="nav-link" to={"/"} onClick={() => onGetArticle().then(() => setTag(''))}>
                     Global Feed
                   </RouterLink>
                 </li>
                 {tag ?
               <li className="nav-item">
-              <RouterLink className="nav-link active" to="" >
+              <RouterLink className="nav-link" to="" >
                 # {tag}
               </RouterLink>
             </li>  
@@ -53,7 +53,7 @@ function Home(props) {
               <p>Popular Tags</p>
               <div className="tag-list">
                 {tags.map(tag => {
-                    return <RouterLink to="" className="tag-pill tag-default" onClick={() => onGetArticle(`/?tag=${tag}`).then(() => setTag(tag))}>
+                    return <RouterLink to="" key={tag} className="tag-pill tag-default" onClick={() => onGetArticle(`/?tag=${tag}`).then(() => setTag(tag))}>
                     {tag}
                   </RouterLink>
                 })} 
