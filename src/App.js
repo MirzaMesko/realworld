@@ -8,6 +8,7 @@ import Login from "./components/Login";
 import Register from './components/Register';
 import SingleArticle from './components/SingleArticle';
 import Profile from './components/Profile';
+import CreateArticle from './components/CreateArticle';
 import { logout, authCheckState } from './actions/users';
 import { getArticles, getTags } from './actions/articles';
 
@@ -27,7 +28,8 @@ function App(props) {
         <Route path="/register" component={Register} />
         <Route path="/@:id" exact component={Profile} />
         <Route path="/article/:id" component={SingleArticle} />
-        <Route path="/" exact component={Home} />
+        <Route path="/editor" component={CreateArticle} />
+        <Route exact path="/" component={Home} />
       </Switch>
       <Footer />
     </div>
