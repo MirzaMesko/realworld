@@ -1,8 +1,9 @@
-import { GET_ARTICLES, GET_TAGS } from "../actions/articles";
+import { GET_ARTICLES, GET_TAGS, GET_COMMENTS } from "../actions/articles";
 
 const initialState = {
   articles: [],
-  tags: []
+  tags: [],
+  comments: []
 };
 
 const articles = (state = initialState, action) => {
@@ -16,6 +17,12 @@ const articles = (state = initialState, action) => {
         return {
           ...state,
           tags: action.tags
+        };
+      }
+      if (action.type === GET_COMMENTS) {
+        return {
+          ...state,
+          comments: action.comments
         };
       }
     return state;
