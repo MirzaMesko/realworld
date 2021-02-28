@@ -20,7 +20,7 @@ function Article(props) {
                     <i className="ion-heart"></i> {article.favoritesCount}
                   </button>
                 </div>
-                <RouterLink to={`/article/:${article.slug}`} className="preview-link" onClick={() => onGetArticle(`/:${article.slug}`)}>
+                <RouterLink to={`/article/:${article.slug}`} className="preview-link" >
                   <h1>{article.title}</h1>
                   <p>{article.description}</p>
                   <span>Read more...</span>
