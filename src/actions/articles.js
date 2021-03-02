@@ -2,6 +2,7 @@ const axios = require('axios');
 export const GET_ARTICLES = 'GET_ARTICLES';
 export const GET_TAGS = 'GET_TAGS';
 export const GET_COMMENTS = 'GET_COMMENTS';
+export const ADD_COMMENT = 'ADD_COMMENT';
 
 function getArticlesSuccess(articles) {
     return {
@@ -21,6 +22,13 @@ function getCommentsSuccess(comments) {
   return {
     type: GET_COMMENTS,
     comments
+  }
+}
+
+function addCommentSuccess(comment) {
+  return {
+    type: ADD_COMMENT,
+    comment
   }
 }
 
@@ -77,7 +85,7 @@ export function createArticle(token, title, description, body, tags) {
         .post(url,  article, { headers } )
         .then((response) => {
           console.log(response)
-          dispatch(getArticlesSuccess(response.data.article));
+          dispatch(getArticlesSuccess([response.data.article]));
           return response
         })
         .catch((error) => {
@@ -101,3 +109,20 @@ export function getComments(token, slug) {
         });
 }
 
+export function addComment(token, slug, body) {
+  let url = 'https://conduit.productionready.io/api/articles/' + slug + '/comments';
+  const headers = { 'Content-Type': 'application/json', 'Authorization' : `Token ${token}` };
+  const comment = { body }
+  console.log({slug})
+    return (dispatch) =>
+      axios
+        .post(url, comment, { headers})
+        .then((response) => {
+          console.log(response)
+          dispatch(addCommentSuccess(response.data.comment));
+          return response
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+}
