@@ -8,12 +8,13 @@ import Login from "./components/Login";
 import Register from './components/Register';
 import SingleArticle from './components/SingleArticle';
 import Profile from './components/Profile';
+import Settings from './components/Settings';
 import CreateArticle from './components/CreateArticle';
 import { logout, authCheckState } from './actions/users';
 import { getArticles, getTags } from './actions/articles';
 
 function App(props) {
-  const { token, onLogout, onTryAutoSignup, onGetArticles, onGetTags} = props;
+  const { token, onLogout, onTryAutoSignup, onGetArticles, onGetTags, user} = props;
 
   React.useEffect(() => {
     onTryAutoSignup();
@@ -22,13 +23,17 @@ function App(props) {
   }, [token]);
   return (
     <div>
-      <Header token={token} onLogout={onLogout} />
+      <Header token={token} onLogout={onLogout} user={user} onGetArticle={onGetArticles} />
       <Switch>
         <Route path="/login" component={Login} />
         <Route path="/register" component={Register} />
         <Route path="/@:id" exact component={Profile} />
         <Route path="/article/:id" component={SingleArticle} />
         <Route path="/editor" component={CreateArticle} />
+        <Route path="/settings" >
+          <Settings onLogout={onLogout} token={token}/>
+        </Route>
+        <Route path="/yourFeed" component={Home} />
         <Route exact path="/" component={Home} />
       </Switch>
       <Footer />
@@ -38,7 +43,8 @@ function App(props) {
 
 const mapStateToProps = (state) => ({
   token: state.users.token,
-  articles: state.users.articles
+  articles: state.users.articles,
+  user: state.users.user
 });
 
 const mapDispatchToProps = (dispatch) => ({
