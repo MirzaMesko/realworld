@@ -2,7 +2,7 @@ import React from 'react';
 import { NavLink as RouterLink } from 'react-router-dom';
 
 function Header(props) {
-  const { token, onLogout } = props;
+  const { token, user, onGetArticle } = props;
     return (
         <nav className="navbar navbar-light">
       <div className="container">
@@ -23,7 +23,9 @@ function Header(props) {
           </RouterLink>
         </li>
         <li className="nav-item">
-          <RouterLink className="nav-link" to="/login" onClick={onLogout}>Log out</RouterLink>
+          <RouterLink to={`/@:${user}`} className="nav-link" onClick={() => onGetArticle(`/?author=${user}`)}>
+            {user}
+            </RouterLink>
         </li>
       </ul>
       : 
