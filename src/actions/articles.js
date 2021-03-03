@@ -143,3 +143,19 @@ export function favoriteArticle(token, slug) {
           console.log(error);
         });
 }
+
+export function unfavoriteArticle(token, slug) {
+  let url = 'https://conduit.productionready.io/api/articles/' + slug + '/favorite';
+  const headers = { 'Content-Type': 'application/json', 'Authorization' : `Token ${token}` };
+    return (dispatch) =>
+      axios
+        .delete(url, {headers}, {params: {} } )
+        .then((response) => {
+          console.log(response)
+          dispatch(getArticlesSuccess([response.data.article]));
+          return response
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+}
