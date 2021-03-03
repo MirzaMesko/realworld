@@ -15,8 +15,7 @@ function Login(props) {
     setPassword(event.target.value);
   };
 
-  const { onLogin, token, user, history } = props;
-  console.log({user, token, user});
+  const { onLogin, history } = props;
 
   const login = (event) => {
     event.preventDefault();
