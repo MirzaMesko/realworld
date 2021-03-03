@@ -1,4 +1,4 @@
-import { GET_ARTICLES, GET_TAGS, GET_COMMENTS } from "../actions/articles";
+import { GET_ARTICLES, GET_TAGS, GET_COMMENTS, ADD_COMMENT } from "../actions/articles";
 
 const initialState = {
   articles: [],
@@ -23,6 +23,12 @@ const articles = (state = initialState, action) => {
         return {
           ...state,
           comments: action.comments
+        };
+      }
+      if (action.type === ADD_COMMENT) {
+        return {
+          ...state,
+          comments: state.comments.concat(action.comment)
         };
       }
     return state;
