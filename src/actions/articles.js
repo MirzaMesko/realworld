@@ -86,6 +86,7 @@ export function createArticle(token, title, description, body, tags) {
         .then((response) => {
           console.log(response)
           dispatch(getArticlesSuccess([response.data.article]));
+          getComments(token, response.data.article.slug)
           return response
         })
         .catch((error) => {
@@ -120,6 +121,22 @@ export function addComment(token, slug, body) {
         .then((response) => {
           console.log(response)
           dispatch(addCommentSuccess(response.data.comment));
+          return response
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+}
+
+export function favoriteArticle(token, slug) {
+  let url = 'https://conduit.productionready.io/api/articles/' + slug + '/favorite';
+  const headers = { 'Content-Type': 'application/json', 'Authorization' : `Token ${token}` };
+    return (dispatch) =>
+      axios
+        .post(url, {}, {headers} )
+        .then((response) => {
+          console.log(response)
+          dispatch(getArticlesSuccess([response.data.article]));
           return response
         })
         .catch((error) => {
