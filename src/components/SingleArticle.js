@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { NavLink as RouterLink } from "react-router-dom";
 import { connect } from "react-redux";
-import { getComments, addComment, favoriteArticle, getArticles } from "../actions/articles";
+import { getComments, addComment, favoriteArticle, getArticles, unfavoriteArticle } from "../actions/articles";
 import { followUser } from '../actions/users';
 
 function SingleArticle(props) {
@@ -15,7 +15,8 @@ function SingleArticle(props) {
     onAddComment,
     onFavoriteArticle,
     onGetArticle,
-    onFollowUser
+    onFollowUser,
+    onUnfavoriteArticle
   } = props;
 
   const handleBodyChange = (event) => {
@@ -60,11 +61,18 @@ function SingleArticle(props) {
               <span className="counter">(10)</span>
             </button>
             &nbsp;&nbsp;
+            {!article[0].favorited ? 
             <button className="btn btn-sm btn-outline-primary" onClick={() => onFavoriteArticle(token, article[0].slug)}>
               <i className="ion-heart"></i>
-              &nbsp; {!article[0].favorited ? 'Favorite Post ' : 'Unfavorite Post '}
+              &nbsp; Favorite Post 
               <span className="counter">({article[0].favoritesCount})</span>
             </button>
+            : 
+            <button className="btn btn-sm btn-outline-primary" onClick={() => onUnfavoriteArticle(token, article[0].slug)}>
+              <i className="ion-heart"></i>
+              &nbsp; Unfavorite Post 
+              <span className="counter">({article[0].favoritesCount})</span>
+            </button>}
           </div>
         </div>
       </div>
@@ -148,6 +156,7 @@ const mapDispatchToProps = (dispatch) => ({
   onGetComments: (token, slug) => dispatch(getComments(token, slug)),
   onAddComment: (token, slug, body) => dispatch(addComment(token, slug, body)),
   onFavoriteArticle: (token, slug) => dispatch(favoriteArticle(token, slug)),
+  onUnfavoriteArticle: (token, slug) => dispatch(unfavoriteArticle(token, slug)),
   onGetArticle: (param) => dispatch(getArticles(param)),
   onFollowUser: (token, username) => dispatch(followUser(token, username))
 });
