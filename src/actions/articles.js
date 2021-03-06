@@ -159,3 +159,17 @@ export function unfavoriteArticle(token, slug) {
           console.log(error);
         });
 }
+
+export function deleteArticle(token, slug) {
+  let url = 'https://conduit.productionready.io/api/articles/' + slug;
+  const headers = { 'Content-Type': 'application/json', 'Authorization' : `Token ${token}` };
+    return (dispatch) =>
+      axios
+        .delete(url, {headers}, {params: {} } )
+        .then((response) => {
+          return response
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+}
