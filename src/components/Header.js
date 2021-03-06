@@ -1,8 +1,9 @@
 import React from 'react';
+import { connect } from "react-redux";
 import { NavLink as RouterLink } from 'react-router-dom';
 
 function Header(props) {
-  const { token, user, onGetArticle, onGetProfile } = props;
+  const { token, onGetArticle, onGetProfile, currentUser } = props;
     return (
         <nav className="navbar navbar-light">
       <div className="container">
@@ -23,8 +24,9 @@ function Header(props) {
           </RouterLink>
         </li>
         <li className="nav-item">
-          <RouterLink to={`/@:${user}`} className="nav-link" onClick={() => onGetArticle(`/?author=${user}`).then(() => onGetProfile(user))}>
-            {user}
+          <RouterLink to={`/@:${currentUser.username}`} className="nav-link" onClick={() => onGetArticle(`/?author=${currentUser.username}`).then(() => onGetProfile(currentUser.username))}>
+            <img class="user-pic" src={currentUser.image}/>
+            {currentUser.username}
             </RouterLink>
         </li>
       </ul>
@@ -46,4 +48,9 @@ function Header(props) {
     )
 }
 
-export default Header;
+const mapStateToProps = (state) => ({
+  token: state.users.token,
+  currentUser: state.users.currentUser
+});
+
+export default connect(mapStateToProps)(Header);
