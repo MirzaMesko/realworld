@@ -2,10 +2,11 @@ import React, { useState } from "react";
 import { connect } from "react-redux";
 import { NavLink as RouterLink } from "react-router-dom";
 import { getArticles, getFeed } from "../actions/articles";
+import { getProfile } from '../actions/users';
 import Article from './Article';
 
 function Home(props) {
-  const { articles, onGetArticle, token, tags, onGetFeed } = props;
+  const { articles, onGetArticle, token, tags, onGetFeed, onGetProfile } = props;
   const [tag, setTag] = useState('');
 
   React.useEffect(() => {
@@ -27,7 +28,7 @@ function Home(props) {
               <ul className="nav nav-pills outline-active">
                 {token ?
                 <li className="nav-item">
-                <RouterLink className="nav-link" to="" onClick={() => onGetFeed(token).then(() => setTag(''))} >
+                <RouterLink className="nav-link" to={`/yourFeed`} onClick={() => onGetFeed(token).then(() => setTag(''))} >
                   Your Feed
                 </RouterLink>
               </li>
@@ -46,7 +47,7 @@ function Home(props) {
               : null}
               </ul>
             </div>
-             <Article articles={articles} onGetArticle={onGetArticle} />
+             <Article articles={articles} onGetArticle={onGetArticle} token={token} onGetProfile={onGetProfile} />
           </div>
           <div className="col-md-3">
             <div className="sidebar">
@@ -74,7 +75,8 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToprops = dispatch => ({
   onGetArticle: (param) => dispatch(getArticles(param)),
-  onGetFeed: (token) => dispatch(getFeed(token))
+  onGetFeed: (token) => dispatch(getFeed(token)),
+  onGetProfile: (username) => dispatch(getProfile(username))
 })
 
 export default connect(mapStateToProps, mapDispatchToprops)(Home);
