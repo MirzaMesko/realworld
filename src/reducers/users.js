@@ -1,9 +1,10 @@
-import { REGISTER_NEW_USER, LOG_OUT, LOGIN_SUCCESS, GET_PROFILE_SUCCESS } from '../actions/users';
+import { REGISTER_NEW_USER, LOG_OUT, LOGIN_SUCCESS, GET_PROFILE_SUCCESS, GET_CURRENT_USER_SUCCESS } from '../actions/users';
 
 const initialState = {
     token: '',
-    user: {}, 
-    profile: {}
+    user: '', 
+    profile: {},
+    currentUser: {}
 }
 
 const users = (state = initialState, action) => {
@@ -32,6 +33,12 @@ const users = (state = initialState, action) => {
         return {
           ...state,
           profile: action.profile
+        };
+      }
+      if (action.type === GET_CURRENT_USER_SUCCESS) {
+        return {
+          ...state,
+          currentUser: action.user
         };
       }
     return state;
