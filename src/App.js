@@ -10,11 +10,11 @@ import SingleArticle from './components/SingleArticle';
 import Profile from './components/Profile';
 import Settings from './components/Settings';
 import CreateArticle from './components/CreateArticle';
-import { logout, authCheckState } from './actions/users';
+import { logout, authCheckState, getProfile } from './actions/users';
 import { getArticles, getTags } from './actions/articles';
 
 function App(props) {
-  const { token, onLogout, onTryAutoSignup, onGetArticles, onGetTags, user} = props;
+  const { token, onLogout, onTryAutoSignup, onGetArticles, onGetTags, user, onGetProfile } = props;
 
   React.useEffect(() => {
     onTryAutoSignup();
@@ -23,11 +23,12 @@ function App(props) {
   }, [token]);
   return (
     <div>
-      <Header token={token} onLogout={onLogout} user={user} onGetArticle={onGetArticles} />
+      <Header token={token} onLogout={onLogout} user={user} onGetArticle={onGetArticles} onGetProfile={onGetProfile} />
       <Switch>
         <Route path="/login" component={Login} />
         <Route path="/register" component={Register} />
-        <Route path="/@:id" exact component={Profile} />
+        <Route exact path="/@:id" component={Profile} />
+        <Route exact path="/@:id/favorited" component={Profile} />
         <Route path="/article/:id" component={SingleArticle} />
         <Route path="/editor" component={CreateArticle} />
         <Route path="/settings" >
@@ -51,7 +52,8 @@ const mapDispatchToProps = (dispatch) => ({
   onLogout: () => dispatch(logout()),
   onTryAutoSignup: () => dispatch(authCheckState()),
   onGetArticles: (param) => dispatch(getArticles(param)),
-  onGetTags: () => dispatch(getTags())
+  onGetTags: () => dispatch(getTags()),
+  onGetProfile: (username) => dispatch(getProfile(username))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);
