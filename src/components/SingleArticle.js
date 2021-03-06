@@ -7,7 +7,8 @@ import {
   favoriteArticle,
   getArticles,
   unfavoriteArticle,
-  deleteArticle
+  deleteArticle,
+  deleteComment
 } from "../actions/articles";
 import { followUser, unfollowUser } from "../actions/users";
 
@@ -28,7 +29,8 @@ function SingleArticle(props) {
     onUnfollowUser,
     profile,
     onDeleteArticle,
-    history
+    history,
+    onDeleteComment
   } = props;
 
   const handleBodyChange = (event) => {
@@ -55,7 +57,6 @@ function SingleArticle(props) {
         >
           <i className="ion-plus-round"></i>
           &nbsp; Follow {profile.username}
-          <span className="counter">(10)</span>
         </button>
       ) : (
         <button
@@ -64,7 +65,6 @@ function SingleArticle(props) {
         >
           <i className="ion-plus-round"></i>
           &nbsp; Unfollow {profile.username}
-          <span className="counter">(10)</span>
         </button>
       )}
       &nbsp;&nbsp;
@@ -103,7 +103,7 @@ function SingleArticle(props) {
         &nbsp;&nbsp;
         <button
           className="btn btn-sm btn-outline-danger"
-          onClick={() => onDeleteArticle(token, article[0].slug).then(() => history.push(`/`))}
+          onClick={() => onDeleteArticle(token, article[0].slug).then(() => history.push(`/@${profile.username}`))}
         >
           <i className="ion-trash-a"></i>
           &nbsp; Delete Article
@@ -206,6 +206,12 @@ function SingleArticle(props) {
                         {date.toDateString()}, {date.getHours()}:
                         {date.getMinutes()}
                       </span>
+                      {comment.author.username === user ? 
+                      <span className="mod-options" onClick={() => onDeleteComment(token, article[0].slug, comment.id)}>
+                      <i className="ion-trash-a"></i>
+                    </span> 
+                    : null
+                    }
                     </div>
                   </div>
                 );
@@ -234,7 +240,8 @@ const mapDispatchToProps = (dispatch) => ({
   onGetArticle: (param) => dispatch(getArticles(param)),
   onFollowUser: (token, username) => dispatch(followUser(token, username)),
   onUnfollowUser: (token, username) => dispatch(unfollowUser(token, username)),
-  onDeleteArticle: (token, slug) => dispatch(deleteArticle(token, slug))
+  onDeleteArticle: (token, slug) => dispatch(deleteArticle(token, slug)),
+  onDeleteComment: (token, slug, id) => dispatch(deleteComment(token, slug, id))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(SingleArticle);
