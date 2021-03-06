@@ -4,6 +4,7 @@ export const REGISTER_NEW_USER = 'REGISTER_NEW_USER';
 export const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
 export const LOG_OUT = 'LOG_OUT';
 export const GET_PROFILE_SUCCESS = 'GET_PROFILE_SUCCESS';
+export const GET_CURRENT_USER_SUCCESS = 'GET_CURRENT_USER_SUCCESS';
 
 export function registrationSuccess(token, user) {
     return {
@@ -34,6 +35,13 @@ export function registrationSuccess(token, user) {
     return {
       type: GET_PROFILE_SUCCESS,
       profile
+    }
+  }
+
+  export function getCurrentUserSuccess(user) {
+    return {
+      type: GET_CURRENT_USER_SUCCESS,
+      user
     }
   }
   
@@ -125,13 +133,14 @@ export function registrationSuccess(token, user) {
     }
   }
 
-  export function updateUser(token, user) {
-    const headers = { 'Content-Type': 'application/json', 'Authorization' : `Token ${token}` };
+  export function updateUser(token, email, username, password, image, bio) {
+    const headers = { Authorization: `Token ${token}` };
+    const user = { email, username, password, image, bio }
     return (dispatch) => {
       axios
-      .post('https://conduit.productionready.io/api/user', user, {headers})
+      .put('https://conduit.productionready.io/api/user', {headers: headers, email: email, username: username, password: password, image: image, bio: bio} )
       .then((response) => {
-        return response
+        dispatch(loginSuccess(response.data.user.token, response.data.user.username))
       })
       .catch((error) => {
         console.log(error.errors);
@@ -146,6 +155,21 @@ export function registrationSuccess(token, user) {
       .get(url)
       .then((response) => {
         dispatch(getProfileSuccess(response.data.profile)) 
+      })
+      .catch((error) => {
+        console.log(error.errors);
+      });
+    }
+  }
+
+  export function getCurrentUser(token) {
+    const url = 'https://conduit.productionready.io/api/user';
+    const headers = { Authorization: `Token ${token}` };
+    return (dispatch) => {
+      axios
+      .get(url, {headers})
+      .then((response) => {
+        dispatch(getCurrentUserSuccess(response.data.user)) 
       })
       .catch((error) => {
         console.log(error.errors);
