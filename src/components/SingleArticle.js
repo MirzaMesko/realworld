@@ -7,6 +7,7 @@ import {
   favoriteArticle,
   getArticles,
   unfavoriteArticle,
+  deleteArticle
 } from "../actions/articles";
 import { followUser, unfollowUser } from "../actions/users";
 
@@ -25,7 +26,9 @@ function SingleArticle(props) {
     onFollowUser,
     onUnfavoriteArticle,
     onUnfollowUser,
-    profile
+    profile,
+    onDeleteArticle,
+    history
   } = props;
 
   const handleBodyChange = (event) => {
@@ -100,7 +103,7 @@ function SingleArticle(props) {
         &nbsp;&nbsp;
         <button
           className="btn btn-sm btn-outline-danger"
-          onClick={() => onFavoriteArticle(token, article[0].slug)}
+          onClick={() => onDeleteArticle(token, article[0].slug).then(() => history.push(`/`))}
         >
           <i className="ion-trash-a"></i>
           &nbsp; Delete Article
@@ -231,6 +234,7 @@ const mapDispatchToProps = (dispatch) => ({
   onGetArticle: (param) => dispatch(getArticles(param)),
   onFollowUser: (token, username) => dispatch(followUser(token, username)),
   onUnfollowUser: (token, username) => dispatch(unfollowUser(token, username)),
+  onDeleteArticle: (token, slug) => dispatch(deleteArticle(token, slug))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(SingleArticle);
