@@ -1,7 +1,16 @@
 import { NavLink as RouterLink } from "react-router-dom";
 
 function Article(props) {
-    const { articles, onGetArticle } = props;
+    const { articles, onGetArticle, onGetProfile } = props;
+
+    const getUserInfo = (username) => {
+      onGetArticle(`/?author=${username}`)
+      onGetProfile(username)
+    }
+
+    if (!articles.length) {
+      return <p className="article-preview">No articles are here... yet.</p>
+    }
     return articles.map((article) => {
             let date = new Date(article.createdAt);
             return (
@@ -11,7 +20,7 @@ function Article(props) {
                     <img src={article.author.image} />
                   </RouterLink>
                   <div className="info">
-                    <RouterLink to={`/@:${article.author.username}`} className="author" onClick={() => onGetArticle(`/?author=${article.author.username}`)}>
+                    <RouterLink to={`/@:${article.author.username}`} className="author" onClick={() => getUserInfo(`${article.author.username}`)}>
                       {article.author.username}
                     </RouterLink>
                     <span className="date">{date.toDateString()}</span>
@@ -20,7 +29,7 @@ function Article(props) {
                     <i className="ion-heart"></i> {article.favoritesCount}
                   </button>
                 </div>
-                <RouterLink to={`/article/:${article.slug}`} className="preview-link" >
+                <RouterLink to={`/article/:${article.slug}`} className="preview-link" onClick={() => onGetProfile(`${article.author.username}`)}>
                   <h1>{article.title}</h1>
                   <p>{article.description}</p>
                   <span>Read more...</span>
