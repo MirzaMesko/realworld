@@ -1,8 +1,9 @@
-import { REGISTER_NEW_USER, LOG_OUT, LOGIN_SUCCESS } from '../actions/users';
+import { REGISTER_NEW_USER, LOG_OUT, LOGIN_SUCCESS, GET_PROFILE_SUCCESS } from '../actions/users';
 
 const initialState = {
     token: '',
-    user: {}
+    user: {}, 
+    profile: {}
 }
 
 const users = (state = initialState, action) => {
@@ -25,6 +26,12 @@ const users = (state = initialState, action) => {
           ...state,
           user: {},
           token: '',
+        };
+      }
+      if (action.type === GET_PROFILE_SUCCESS) {
+        return {
+          ...state,
+          profile: action.profile
         };
       }
     return state;
