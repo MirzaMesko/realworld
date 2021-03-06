@@ -1,24 +1,55 @@
 import { connect } from "react-redux";
+import { NavLink as RouterLink } from "react-router-dom";
 import { getArticles } from "../actions/articles";
 import Article from './Article';
+import { followUser, unfollowUser, getProfile } from '../actions/users';
 
 function Profile(props) {
-    const { articles, onGetArticle } = props;
+    const { articles, onGetArticle, onUnfollowUser, onFollowUser, token, user, profile, onGetProfile } = props;
+    console.log(profile)
+
+    let button = (
+        <span>
+            {!profile.following ?
+            <button className="btn btn-sm btn-outline-secondary" onClick={() => onFollowUser(token, profile.username)}>
+              <i className="ion-plus-round"></i>
+              &nbsp;  Follow {profile.username} 
+              <span className="counter">(10)</span>
+            </button>
+              : 
+              <button className="btn btn-sm btn-outline-secondary" onClick={() => onUnfollowUser(token, profile.username)}>
+              <i className="ion-plus-round"></i>
+              &nbsp;  Unfollow {profile.username} 
+              <span className="counter">(10)</span>
+            </button>
+            }
+        </span>
+    )
+if (profile.username === user) {
+    button = (
+        <span>
+            <button className="btn btn-sm btn-outline-secondary action-btn pull-xs-right" >
+            <RouterLink  to="/settings">
+              <i className="ion-gear-a"></i>
+              &nbsp;  Edit Profile Settings 
+              </RouterLink>
+            </button>
+        </span>
+    )
+}
+
   return (
     <div className="profile-page">
       <div className="user-info">
         <div className="container">
           <div className="row">
             <div className="col-xs-12 col-md-10 offset-md-1">
-              <img src={articles[0].author.image} className="user-img" />
-              <h4>{articles[0].author.username}</h4>
+              <img src={profile.image} className="user-img" />
+              <h4>{profile.username}</h4>
               <p>
-              {articles[0].author.bio}
+              {profile.bio}
               </p>
-              <button className="btn btn-sm btn-outline-secondary action-btn">
-                <i className="ion-plus-round"></i>
-                &nbsp; Follow {articles[0].author.username}
-              </button>
+              {button}
             </div>
           </div>
         </div>
@@ -30,18 +61,18 @@ function Profile(props) {
             <div className="articles-toggle">
               <ul className="nav nav-pills outline-active">
                 <li className="nav-item">
-                  <a className="nav-link active" href="">
+                  <RouterLink className="nav-link" to ={`/@:${profile.username}`} onClick={() => onGetArticle(`/?author=${profile.username}`)}>
                     My Articles
-                  </a>
+                  </RouterLink>
                 </li>
                 <li className="nav-item">
-                  <a className="nav-link" href="">
+                  <RouterLink className="nav-link" to ={`/@:${profile.username}/favorited`} onClick={() => onGetArticle(`/?favorited=${profile.username}`)}>
                     Favorited Articles
-                  </a>
+                  </RouterLink>
                 </li>
               </ul>
             </div>
-            <Article articles={articles} onGetArticle={onGetArticle} />
+            <Article articles={articles} onGetArticle={onGetArticle} onGetProfile={onGetProfile}/>
           </div>
         </div>
       </div>
@@ -51,10 +82,16 @@ function Profile(props) {
 
 const mapStateToProps = (state) => ({
     articles: state.articles.articles,
+    token: state.users.token,
+    user: state.users.user,
+    profile: state.users.profile
   });
 
   const mapDispatchToprops = dispatch => ({
-    onGetArticle: (param) => dispatch(getArticles(param))
+    onGetArticle: (param) => dispatch(getArticles(param)),
+    onFollowUser: (token, username) => dispatch(followUser(token, username)),
+  onUnfollowUser: (token, username) => dispatch(unfollowUser(token, username)),
+  onGetProfile: (username) => dispatch(getProfile(username))
   })
 
 export default connect(mapStateToProps, mapDispatchToprops)(Profile);
