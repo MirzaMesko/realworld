@@ -3,6 +3,8 @@ export const GET_ARTICLES = 'GET_ARTICLES';
 export const GET_TAGS = 'GET_TAGS';
 export const GET_COMMENTS = 'GET_COMMENTS';
 export const ADD_COMMENT = 'ADD_COMMENT';
+export const DELETE_COMMENT_SUCCESS = 'DELETE_COMMENT_SUCCESS';
+export const DELETE_ARTICLE_SUCCESS = 'DELETE_ARTICLE_SUCCESS';
 
 function getArticlesSuccess(articles) {
     return {
@@ -29,6 +31,20 @@ function addCommentSuccess(comment) {
   return {
     type: ADD_COMMENT,
     comment
+  }
+}
+
+function deleteCommentSuccess(id) {
+  return { 
+    type: DELETE_COMMENT_SUCCESS,
+    id
+  }
+}
+
+function deleteArticleSuccess(slug) {
+  return {
+    type: DELETE_ARTICLE_SUCCESS,
+    slug
   }
 }
 
@@ -167,7 +183,21 @@ export function deleteArticle(token, slug) {
       axios
         .delete(url, {headers}, {params: {} } )
         .then((response) => {
-          return response
+          dispatch(deleteArticleSuccess(slug))
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+}
+
+export function deleteComment(token, slug, id) {
+  let url = `https://conduit.productionready.io/api/articles/${slug}/comments/${id}`;
+  const headers = { 'Content-Type': 'application/json', 'Authorization' : `Token ${token}` };
+    return (dispatch) =>
+      axios
+        .delete(url, {headers}, {params: {} } )
+        .then((response) => {
+          dispatch(deleteCommentSuccess(id))
         })
         .catch((error) => {
           console.log(error);
