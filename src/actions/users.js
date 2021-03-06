@@ -3,6 +3,7 @@ const axios = require('axios');
 export const REGISTER_NEW_USER = 'REGISTER_NEW_USER';
 export const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
 export const LOG_OUT = 'LOG_OUT';
+export const GET_PROFILE_SUCCESS = 'GET_PROFILE_SUCCESS';
 
 export function registrationSuccess(token, user) {
     return {
@@ -27,6 +28,13 @@ export function registrationSuccess(token, user) {
     return {
       type: LOG_OUT,
     };
+  }
+
+  export function getProfileSuccess(profile) {
+    return {
+      type: GET_PROFILE_SUCCESS,
+      profile
+    }
   }
   
   export function checkAuthTimeout(expirationTime) {
@@ -80,9 +88,68 @@ export function registrationSuccess(token, user) {
           localStorage.setItem('token', response.data.user.token);
           localStorage.setItem('expirationDate', expirationDate);
           localStorage.setItem('user', response.data.user.username);
-          dispatch(loginSuccess(response.data.user.token, response.data.user));
+          dispatch(loginSuccess(response.data.user.token, response.data.user.username));
         })
         .catch((error) => {
           console.log(error.errors);
         });
   }
+
+  export function followUser(token, username) {
+    const headers = { 'Content-Type': 'application/json', 'Authorization' : `Token ${token}` };
+    const url = 'https://conduit.productionready.io/api/profiles/' + username + '/follow';
+    return (dispatch) => {
+      axios
+      .post(url, {}, {headers})
+      .then((response) => {
+        dispatch(getProfileSuccess(response.data.profile))
+      })
+      .catch((error) => {
+        console.log(error.errors);
+      });
+    }
+  }
+
+  export function unfollowUser(token, username) {
+    const headers = { 'Content-Type': 'application/json', 'Authorization' : `Token ${token}` };
+    const url = 'https://conduit.productionready.io/api/profiles/' + username + '/follow';
+    return (dispatch) => {
+      axios
+      .delete(url, {headers}, {params: {} })
+      .then((response) => {
+        dispatch(getProfileSuccess(response.data.profile))
+      })
+      .catch((error) => {
+        console.log(error.errors);
+      });
+    }
+  }
+
+  export function updateUser(token, user) {
+    const headers = { 'Content-Type': 'application/json', 'Authorization' : `Token ${token}` };
+    return (dispatch) => {
+      axios
+      .post('https://conduit.productionready.io/api/user', user, {headers})
+      .then((response) => {
+        return response
+      })
+      .catch((error) => {
+        console.log(error.errors);
+      });
+    }
+  }
+
+  export function getProfile(username) {
+    const url = 'https://conduit.productionready.io/api/profiles/' + username;
+    return (dispatch) => {
+      axios
+      .get(url)
+      .then((response) => {
+        dispatch(getProfileSuccess(response.data.profile)) 
+      })
+      .catch((error) => {
+        console.log(error.errors);
+      });
+    }
+  }
+
