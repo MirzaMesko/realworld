@@ -6,6 +6,7 @@ import { NavLink as RouterLink } from 'react-router-dom';
 function Login(props) {
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
+  const [errors, setErrors] = useState([]);
 
   const handleEmailChange = (event) => {
     setEmail(event.target.value);
@@ -19,12 +20,23 @@ function Login(props) {
 
   const login = (event) => {
     event.preventDefault();
+    setErrors([]);
     const user = {
       email: email, 
       password: password
     }
-    onLogin(user).then(() => {
-      history.push('/');
+    onLogin(user).then((response) => {
+      if(response.status === 200) {
+        history.push('/');
+      }
+      if(response.status !== 200) {
+        let keys = Object.keys(response);
+        let error = [];
+        keys.map((key) => {
+          error.push([key + " " + response[key]]);
+        });
+        setErrors(error);
+      }
     });
   }  
     return (
@@ -38,9 +50,13 @@ function Login(props) {
           <RouterLink to="/register">Need an account?</RouterLink>
         </p>
 
+        {errors.length ? 
         <ul className="error-messages">
-          <li>That email is already taken</li>
-        </ul>
+          {errors.map(error => <li key={error}>{error}</li>)}
+      </ul>
+      : null
+      }
+        
 
         <form onSubmit={login}>
           <fieldset className="form-group">
@@ -64,7 +80,7 @@ function Login(props) {
 const mapStateToProps = (state) => {
   return {
     user: state.users.user,
-  token: state.users.token
+  token: state.users.token,
   }
   
 }
