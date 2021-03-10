@@ -93,21 +93,25 @@ function SingleArticle(props) {
   if (profile.username === user) {
     buttons = (
       <span>
+        <RouterLink to={`/editor/@:${article[0].slug}`}>
         <button
           className="btn btn-sm btn-outline-secondary"
-          onClick={() => onFavoriteArticle(token, article[0].slug)}
         >
           <i className="ion-edit"></i>
           &nbsp; Edit Article
         </button>
+        </RouterLink>
+        
         &nbsp;&nbsp;
+        <RouterLink to={`/@${profile.username}`}>
         <button
           className="btn btn-sm btn-outline-danger"
-          onClick={() => onDeleteArticle(token, article[0].slug).then(() => history.push(`/@${profile.username}`))}
+          onClick={() => onDeleteArticle(token, article[0].slug)}
         >
           <i className="ion-trash-a"></i>
           &nbsp; Delete Article
         </button>
+        </RouterLink>
       </span>
     );
   }
@@ -139,11 +143,12 @@ function SingleArticle(props) {
                 {new Date(article[0].createdAt).toDateString()}
               </span>
             </div>
-            {buttons}
+            {token ? buttons : null}
           </div>
         </div>
       </div>
 
+      
       <div className="container page">
         <div className="row article-content">
           <div className="col-md-12">
@@ -165,25 +170,35 @@ function SingleArticle(props) {
 
         <div className="row">
           <div className="col-xs-12 col-md-8 offset-md-2">
+            {token ? 
             <form className="card comment-form" onSubmit={comment}>
-              <div className="card-block">
-                <textarea
-                  className="form-control"
-                  placeholder="Write a comment..."
-                  rows="3"
-                  onChange={handleBodyChange}
-                ></textarea>
-              </div>
-              <div className="card-footer">
-                <img
-                  src={profile.image}
-                  className="comment-author-img"
-                />
-                <button className="btn btn-sm btn-primary">Post Comment</button>
-              </div>
-            </form>
+            <div className="card-block">
+              <textarea
+                className="form-control"
+                placeholder="Write a comment..."
+                rows="3"
+                onChange={handleBodyChange}
+              ></textarea>
+            </div>
+            <div className="card-footer">
+              <img
+                src={profile.image}
+                className="comment-author-img"
+              />
+              <button className="btn btn-sm btn-primary">Post Comment</button>
+            </div>
+          </form>
+          : <p>
+            <RouterLink to='/login'>Sign in </RouterLink>
+            or
+            <RouterLink to='/register'> sign up </RouterLink>
+            to add comments on this article.
+            </p>
+            }
+            
 
-            {comments &&
+            {  
+            comments &&
               comments.map((comment) => {
                 let date = new Date(comment.createdAt);
                 return (
