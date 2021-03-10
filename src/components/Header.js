@@ -25,7 +25,7 @@ function Header(props) {
         </li>
         <li className="nav-item">
           <RouterLink to={`/@:${currentUser.username}`} className="nav-link" onClick={() => onGetArticle(`/?author=${currentUser.username}`).then(() => onGetProfile(currentUser.username))}>
-            <img class="user-pic" src={currentUser.image}/>
+            <img className="user-pic" src={currentUser.image}/>
             {currentUser.username}
             </RouterLink>
         </li>
