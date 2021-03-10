@@ -6,21 +6,18 @@ import { followUser, unfollowUser, getProfile } from '../actions/users';
 
 function Profile(props) {
     const { articles, onGetArticle, onUnfollowUser, onFollowUser, token, user, profile, onGetProfile } = props;
-    console.log(profile)
 
     let button = (
         <span>
             {!profile.following ?
-            <button className="btn btn-sm btn-outline-secondary" onClick={() => onFollowUser(token, profile.username)}>
+            <button className="btn btn-sm btn-outline-secondary pull-xs-right" onClick={() => onFollowUser(token, profile.username)}>
               <i className="ion-plus-round"></i>
               &nbsp;  Follow {profile.username} 
-              <span className="counter">(10)</span>
             </button>
               : 
-              <button className="btn btn-sm btn-outline-secondary" onClick={() => onUnfollowUser(token, profile.username)}>
+              <button className="btn btn-sm btn-outline-secondary pull-xs-right" onClick={() => onUnfollowUser(token, profile.username)}>
               <i className="ion-plus-round"></i>
               &nbsp;  Unfollow {profile.username} 
-              <span className="counter">(10)</span>
             </button>
             }
         </span>
