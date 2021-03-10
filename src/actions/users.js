@@ -1,3 +1,5 @@
+import { getArticles } from './articles';
+
 const axios = require('axios');
 
 export const REGISTER_NEW_USER = 'REGISTER_NEW_USER';
@@ -81,9 +83,10 @@ export function registrationSuccess(token, user) {
           localStorage.setItem('expirationDate', expirationDate);
           localStorage.setItem('user', response.data.user.username);
           dispatch(registrationSuccess(response.data.user.token, response.data.user));
+          return response
         })
         .catch((error) => {
-          console.log(error.errors);
+          return error.response.data.errors
         });
   }
 
@@ -97,9 +100,10 @@ export function registrationSuccess(token, user) {
           localStorage.setItem('expirationDate', expirationDate);
           localStorage.setItem('user', response.data.user.username);
           dispatch(loginSuccess(response.data.user.token, response.data.user.username));
+          return response
         })
         .catch((error) => {
-          console.log(error.errors);
+          return error.response.data.errors
         });
   }
 
@@ -133,17 +137,19 @@ export function registrationSuccess(token, user) {
     }
   }
 
-  export function updateUser(token, email, username, password, image, bio) {
-    const headers = { Authorization: `Token ${token}` };
+  export function editUser(token, email, username, password, image, bio) {
+    const headers = { 'Content-Type': 'application/json', 'Authorization' : `Token ${token}` };
     const user = { email, username, password, image, bio }
-    return (dispatch) => {
+    return (dispatch) => { 
       axios
-      .put('https://conduit.productionready.io/api/user', {headers: headers, email: email, username: username, password: password, image: image, bio: bio} )
+      .put('https://conduit.productionready.io/api/user', {user}, {headers})
       .then((response) => {
-        dispatch(loginSuccess(response.data.user.token, response.data.user.username))
+        dispatch(getCurrentUserSuccess(response.data.user))
+        dispatch(getArticles(response.data.user.username))
+        dispatch(getProfile(response.data.user.username));
       })
       .catch((error) => {
-        console.log(error.errors);
+        console.log(error);
       });
     }
   }
@@ -157,22 +163,23 @@ export function registrationSuccess(token, user) {
         dispatch(getProfileSuccess(response.data.profile)) 
       })
       .catch((error) => {
-        console.log(error.errors);
+        console.log(error);
       });
     }
   }
 
   export function getCurrentUser(token) {
     const url = 'https://conduit.productionready.io/api/user';
-    const headers = { Authorization: `Token ${token}` };
+    const headers = { 'Content-Type': 'application/json', 'Authorization' : `Token ${token}` };
     return (dispatch) => {
       axios
       .get(url, {headers})
       .then((response) => {
+        console.log(response.data);
         dispatch(getCurrentUserSuccess(response.data.user)) 
       })
       .catch((error) => {
-        console.log(error.errors);
+        console.log(error.response.data);
       });
     }
   }
