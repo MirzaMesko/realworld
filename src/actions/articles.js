@@ -5,6 +5,8 @@ export const GET_COMMENTS = 'GET_COMMENTS';
 export const ADD_COMMENT = 'ADD_COMMENT';
 export const DELETE_COMMENT_SUCCESS = 'DELETE_COMMENT_SUCCESS';
 export const DELETE_ARTICLE_SUCCESS = 'DELETE_ARTICLE_SUCCESS';
+export const ARTICLE_FAVORITED = 'ARTICLE_FAVORITED';
+export const ARTICLE_UNFAVORITED = 'ARTICLE_UNFAVORITED';
 
 function getArticlesSuccess(articles) {
     return {
@@ -48,6 +50,20 @@ function deleteArticleSuccess(slug) {
   }
 }
 
+function articleFavorited(article) {
+  return {
+    type: ARTICLE_FAVORITED,
+    article
+  }
+}
+
+function articleUnfavorited(article) {
+  return {
+    type: ARTICLE_UNFAVORITED,
+    article
+  }
+}
+
 
 export function getArticles(param) {
   let url = `https://conduit.productionready.io/api/articles${param}`;
@@ -58,7 +74,12 @@ export function getArticles(param) {
       axios
         .get(url)
         .then((response) => {
-          dispatch(getArticlesSuccess(response.data.articles));
+          if(!response.data.articles) {
+            dispatch(getArticlesSuccess([response.data.article]));
+          } else {
+            dispatch(getArticlesSuccess(response.data.articles));
+          }
+          
         })
         .catch((error) => {
           console.log(error);
@@ -80,10 +101,10 @@ export function getTags() {
 
 export function getFeed(token) {
   let url = `https://conduit.productionready.io/api/articles/feed`;
-  const headers = { Authorization: `Token ${token}` };
+  const headers = { 'Content-Type': 'application/json', 'Authorization' : `Token ${token}` };
     return (dispatch) =>
       axios
-        .get(url, { headers })
+        .get(url, {}, { headers })
         .then((response) => {
           dispatch(getArticlesSuccess(response.data.articles));
         })
@@ -146,8 +167,7 @@ export function favoriteArticle(token, slug) {
       axios
         .post(url, {}, {headers} )
         .then((response) => {
-          dispatch(getArticlesSuccess([response.data.article]));
-          return response
+          dispatch(articleFavorited([response.data.article]))
         })
         .catch((error) => {
           console.log(error);
@@ -161,8 +181,7 @@ export function unfavoriteArticle(token, slug) {
       axios
         .delete(url, {headers}, {params: {} } )
         .then((response) => {
-          dispatch(getArticlesSuccess([response.data.article]));
-          return response
+          dispatch(articleUnfavorited([response.data.article]))
         })
         .catch((error) => {
           console.log(error);
