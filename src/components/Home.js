@@ -1,13 +1,27 @@
 import React, { useState } from "react";
 import { connect } from "react-redux";
 import { NavLink as RouterLink } from "react-router-dom";
-import { getArticles, getFeed } from "../actions/articles";
-import { getProfile } from '../actions/users';
-import Article from './Article';
+import {
+  getArticles,
+  getFeed,
+  favoriteArticle,
+  unfavoriteArticle,
+} from "../actions/articles";
+import { getProfile } from "../actions/users";
+import Article from "./Article";
 
 function Home(props) {
-  const { articles, onGetArticle, token, tags, onGetFeed, onGetProfile } = props;
-  const [tag, setTag] = useState('');
+  const {
+    articles,
+    onGetArticle,
+    token,
+    tags,
+    onGetFeed,
+    onGetProfile,
+    onFavoriteArticle,
+    onUnfavoriteArticle,
+  } = props;
+  const [tag, setTag] = useState("");
 
   React.useEffect(() => {
     onGetArticle();
@@ -26,38 +40,62 @@ function Home(props) {
           <div className="col-md-9">
             <div className="feed-toggle">
               <ul className="nav nav-pills outline-active">
-                {token ?
+                {token ? (
+                  <li className="nav-item">
+                    <RouterLink
+                      className="nav-link"
+                      to={`/yourFeed`}
+                      onClick={() => onGetFeed(token).then(() => setTag(""))}
+                    >
+                      Your Feed
+                    </RouterLink>
+                  </li>
+                ) : null}
                 <li className="nav-item">
-                <RouterLink className="nav-link" to={`/yourFeed`} onClick={() => onGetFeed(token).then(() => setTag(''))} >
-                  Your Feed
-                </RouterLink>
-              </li>
-              : null }
-                <li className="nav-item">
-                  <RouterLink className="nav-link" to={"/"} onClick={() => onGetArticle().then(() => setTag(''))}>
+                  <RouterLink
+                    className="nav-link"
+                    to={"/"}
+                    onClick={() => onGetArticle().then(() => setTag(""))}
+                  >
                     Global Feed
                   </RouterLink>
                 </li>
-                {tag ?
-              <li className="nav-item">
-              <RouterLink className="nav-link" to="" >
-                # {tag}
-              </RouterLink>
-            </li>  
-              : null}
+                {tag ? (
+                  <li className="nav-item">
+                    <RouterLink className="nav-link" to="">
+                      # {tag}
+                    </RouterLink>
+                  </li>
+                ) : null}
               </ul>
             </div>
-             <Article articles={articles} onGetArticle={onGetArticle} token={token} onGetProfile={onGetProfile} />
+            <Article
+              articles={articles}
+              onGetArticle={onGetArticle}
+              token={token}
+              onGetProfile={onGetProfile}
+              onFavoriteArticle={onFavoriteArticle}
+              onUnfavoriteArticle={onUnfavoriteArticle}
+            />
           </div>
           <div className="col-md-3">
             <div className="sidebar">
               <p>Popular Tags</p>
               <div className="tag-list">
-                {tags.map(tag => {
-                    return <RouterLink to="" key={tag} className="tag-pill tag-default" onClick={() => onGetArticle(`/?tag=${tag}`).then(() => setTag(tag))}>
-                    {tag}
-                  </RouterLink>
-                })} 
+                {tags.map((tag) => {
+                  return (
+                    <RouterLink
+                      to=""
+                      key={tag}
+                      className="tag-pill tag-default"
+                      onClick={() =>
+                        onGetArticle(`/?tag=${tag}`).then(() => setTag(tag))
+                      }
+                    >
+                      {tag}
+                    </RouterLink>
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -70,13 +108,16 @@ function Home(props) {
 const mapStateToProps = (state) => ({
   articles: state.articles.articles,
   token: state.users.token,
-  tags: state.articles.tags
+  tags: state.articles.tags,
 });
 
-const mapDispatchToprops = dispatch => ({
+const mapDispatchToprops = (dispatch) => ({
   onGetArticle: (param) => dispatch(getArticles(param)),
   onGetFeed: (token) => dispatch(getFeed(token)),
-  onGetProfile: (username) => dispatch(getProfile(username))
-})
+  onGetProfile: (username) => dispatch(getProfile(username)),
+  onFavoriteArticle: (token, slug) => dispatch(favoriteArticle(token, slug)),
+  onUnfavoriteArticle: (token, slug) =>
+    dispatch(unfavoriteArticle(token, slug)),
+});
 
 export default connect(mapStateToProps, mapDispatchToprops)(Home);
