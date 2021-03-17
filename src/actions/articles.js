@@ -7,11 +7,13 @@ export const DELETE_COMMENT_SUCCESS = 'DELETE_COMMENT_SUCCESS';
 export const DELETE_ARTICLE_SUCCESS = 'DELETE_ARTICLE_SUCCESS';
 export const ARTICLE_FAVORITED = 'ARTICLE_FAVORITED';
 export const ARTICLE_UNFAVORITED = 'ARTICLE_UNFAVORITED';
+export const SHOW_LOADING = 'SHOW_LOADING';
 
-function getArticlesSuccess(articles) {
+function getArticlesSuccess(articles, articlesCount) {
     return {
         type: GET_ARTICLES,
-        articles
+        articles,
+        articlesCount
     }
 };
 
@@ -64,11 +66,21 @@ function articleUnfavorited(article) {
   }
 }
 
+function setLoading() {
+  return {
+    type: SHOW_LOADING
+  }
+}
 
-export function getArticles(param) {
-  let url = `https://conduit.productionready.io/api/articles${param}`;
+
+export function getArticles(param, offset) {
+  setLoading();
+  if(!offset) {
+    offset = 0
+  }
+  let url = `https://conduit.productionready.io/api/articles?limit=10&offset=${offset}&${param}`;
   if (!param) {
-    url = `https://conduit.productionready.io/api/articles`
+    url = `https://conduit.productionready.io/api/articles?limit=10&offset=${offset}`
   }
     return (dispatch) =>
       axios
@@ -77,7 +89,7 @@ export function getArticles(param) {
           if(!response.data.articles) {
             dispatch(getArticlesSuccess([response.data.article]));
           } else {
-            dispatch(getArticlesSuccess(response.data.articles));
+            dispatch(getArticlesSuccess(response.data.articles, response.data.articlesCount));
           }
           
         })
@@ -100,13 +112,14 @@ export function getTags() {
 }
 
 export function getFeed(token) {
+  setLoading();
   let url = `https://conduit.productionready.io/api/articles/feed`;
   const headers = { 'Content-Type': 'application/json', 'Authorization' : `Token ${token}` };
     return (dispatch) =>
       axios
-        .get(url, {}, { headers })
+        .get(url, { headers })
         .then((response) => {
-          dispatch(getArticlesSuccess(response.data.articles));
+          dispatch(getArticlesSuccess(response.data.articles, response.data.articlesCount));
         })
         .catch((error) => {
           console.log(error);
