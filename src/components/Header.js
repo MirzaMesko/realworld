@@ -3,7 +3,14 @@ import { connect } from "react-redux";
 import { NavLink as RouterLink } from 'react-router-dom';
 
 function Header(props) {
-  const { token, onGetArticle, onGetProfile, currentUser } = props;
+  const { token, onGetArticle, onGetProfile, currentUser, onShowLoading } = props;
+
+  const getUserInfo = (username) => {
+    onShowLoading();
+    onGetProfile(username);
+    onGetArticle(`author=${username}`, 10);
+    ;
+  };
     return (
         <nav className="navbar navbar-light">
       <div className="container">
@@ -11,7 +18,7 @@ function Header(props) {
         { token ? 
         <ul className="nav navbar-nav pull-xs-right">
         <li className="nav-item">
-          <RouterLink className="nav-link" to="/">Home</RouterLink>
+          <RouterLink strict={true} exact={true} className="nav-link"  to="/">Home</RouterLink>
         </li>
         <li className="nav-item">
           <RouterLink className="nav-link" to="/editor">
@@ -24,7 +31,7 @@ function Header(props) {
           </RouterLink>
         </li>
         <li className="nav-item">
-          <RouterLink to={`/@:${currentUser.username}`} className="nav-link" onClick={() => onGetArticle(`/?author=${currentUser.username}`).then(() => onGetProfile(currentUser.username))}>
+          <RouterLink to={`/@:${currentUser.username}`} className="nav-link" onClick={() => getUserInfo(currentUser.username)}>
             <img className="user-pic" src={currentUser.image}/>
             {currentUser.username}
             </RouterLink>
@@ -33,7 +40,7 @@ function Header(props) {
       : 
       <ul className="nav navbar-nav pull-xs-right">
         <li className="nav-item">
-          <RouterLink className="nav-link active" to="/">Home</RouterLink>
+          <RouterLink exact={true} className="nav-link" to="/">Home</RouterLink>
         </li>
         <li className="nav-item">
           <RouterLink className="nav-link" to="/login">Sign in</RouterLink>
@@ -53,4 +60,8 @@ const mapStateToProps = (state) => ({
   currentUser: state.users.currentUser
 });
 
-export default connect(mapStateToProps)(Header);
+const mapDispatchToProps = dispatch => ({
+  onShowLoading: () => dispatch({ type: 'SHOW_LOADING'})
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(Header);
