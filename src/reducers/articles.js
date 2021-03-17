@@ -11,8 +11,10 @@ import {
 
 const initialState = {
   articles: [],
+  articlesCount: 0,
   tags: [],
   comments: [],
+  loading: false
 };
 
 const articles = (state = initialState, action) => {
@@ -20,6 +22,8 @@ const articles = (state = initialState, action) => {
     return {
       ...state,
       articles: action.articles,
+      articlesCount: action.articlesCount,
+      loading: false
     };
   }
   if (action.type === GET_TAGS) {
@@ -80,6 +84,13 @@ const articles = (state = initialState, action) => {
        ...state,
        articles: mapped
      }
+  }
+  if(action.type === 'SHOW_LOADING') {
+    return {
+      ...state,
+      loading: true,
+      articles: [],
+    }
   }
   return state;
 };
