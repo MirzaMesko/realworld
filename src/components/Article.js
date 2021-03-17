@@ -8,12 +8,20 @@ function Article(props) {
     onFavoriteArticle,
     onUnfavoriteArticle,
     token,
+    onShowLoading,
+    loading
   } = props;
 
   const getUserInfo = (username) => {
-    onGetArticle(`/?author=${username}`);
+    onShowLoading();
     onGetProfile(username);
+    onGetArticle(`author=${username}`, 10);
+    ;
   };
+
+  if (loading) {
+    return <div className="article-preview"></div>
+  }
 
   if (!articles.length) {
     return <p className="article-preview">No articles are here... yet.</p>;
@@ -36,7 +44,7 @@ function Article(props) {
             </RouterLink>
             <span className="date">{date.toDateString()}</span>
           </div>
-          {article.favorited === false ? (
+          {article.favorited === false && token ? (
             <button
               className="btn btn-outline-primary btn-sm pull-xs-right"
               onClick={() => onFavoriteArticle(token, article.slug)}
