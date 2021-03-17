@@ -10,7 +10,7 @@ import {
   deleteArticle,
   deleteComment
 } from "../actions/articles";
-import { followUser, unfollowUser } from "../actions/users";
+import { followUser, unfollowUser, getProfile } from "../actions/users";
 
 function SingleArticle(props) {
   const [body, setBody] = useState("");
@@ -18,6 +18,7 @@ function SingleArticle(props) {
     articles,
     match,
     user,
+    currentUser,
     onGetComments,
     token,
     comments,
@@ -29,8 +30,9 @@ function SingleArticle(props) {
     onUnfollowUser,
     profile,
     onDeleteArticle,
-    history,
-    onDeleteComment
+    onDeleteComment, 
+    onShowLoading,
+    onGetProfile
   } = props;
 
   const handleBodyChange = (event) => {
@@ -48,23 +50,30 @@ function SingleArticle(props) {
     event.target.reset();
   };
 
+  const getUserInfo = (username) => {
+    onShowLoading();
+    onGetProfile(username);
+    onGetArticle(`author=${username}`, 10);
+    ;
+  };
+
   let buttons = (
     <span>
-      {profile.following === false ? (
+      {article[0].author.following === false ? (
         <button
           className="btn btn-sm btn-outline-secondary"
-          onClick={() => onFollowUser(token, profile.username)}
+          onClick={() => onFollowUser(token, article[0].author.username)}
         >
           <i className="ion-plus-round"></i>
-          &nbsp; Follow {profile.username}
+          &nbsp; Follow {article[0].author.username}
         </button>
       ) : (
         <button
           className="btn btn-sm btn-outline-secondary"
-          onClick={() => onUnfollowUser(token, profile.username)}
+          onClick={() => onUnfollowUser(token, article[0].author.username)}
         >
           <i className="ion-plus-round"></i>
-          &nbsp; Unfollow {profile.username}
+          &nbsp; Unfollow {article[0].author.username}
         </button>
       )}
       &nbsp;&nbsp;
@@ -90,7 +99,7 @@ function SingleArticle(props) {
     </span>
   );
 
-  if (profile.username === user) {
+  if (article[0].author.username === user) {
     buttons = (
       <span>
         <RouterLink to={`/editor/@:${article[0].slug}`}>
@@ -103,7 +112,7 @@ function SingleArticle(props) {
         </RouterLink>
         
         &nbsp;&nbsp;
-        <RouterLink to={`/@${profile.username}`}>
+        <RouterLink to={`/@${article[0].author.username}`}>
         <button
           className="btn btn-sm btn-outline-danger"
           onClick={() => onDeleteArticle(token, article[0].slug)}
@@ -127,17 +136,17 @@ function SingleArticle(props) {
 
           <div className="article-meta">
             <a href="">
-              <img src={profile.image} />
+              <img src={article[0].author.image} />
             </a>
             <div className="info">
               <RouterLink
-                to={`/@:${profile.username}`}
+                to={`/@:${article[0].author.username}`}
                 className="author"
                 onClick={() =>
-                  onGetArticle(`/?author=${profile.username}`)
+                  onGetArticle(`author=${article[0].author.username}`)
                 }
               >
-                {profile.username}
+                {article[0].author.username}
               </RouterLink>
               <span className="date">
                 {new Date(article[0].createdAt).toDateString()}
@@ -159,7 +168,7 @@ function SingleArticle(props) {
               <ul className="tag-list">
                 {article[0].tagList.map((tag) => {
                   return (
-                    <li class="tag-default tag-pill tag-outline">{tag}</li>
+                    <li className="tag-default tag-pill tag-outline" key={tag}>{tag}</li>
                   );
                 })}
               </ul>
@@ -182,7 +191,7 @@ function SingleArticle(props) {
             </div>
             <div className="card-footer">
               <img
-                src={profile.image}
+                src={currentUser.image}
                 className="comment-author-img"
               />
               <button className="btn btn-sm btn-primary">Post Comment</button>
@@ -198,7 +207,7 @@ function SingleArticle(props) {
             
 
             {  
-            comments &&
+            comments  &&
               comments.map((comment) => {
                 let date = new Date(comment.createdAt);
                 return (
@@ -214,9 +223,9 @@ function SingleArticle(props) {
                         />
                       </a>
                       &nbsp;
-                      <a href="" className="comment-author">
+                      <RouterLink to={`/@:${comment.author.username}`} className="comment-author" onClick={() => getUserInfo(comment.author.username)}>
                         {comment.author.username}
-                      </a>
+                      </RouterLink>
                       <span className="date-posted">
                         {date.toDateString()}, {date.getHours()}:
                         {date.getMinutes()}
@@ -243,7 +252,8 @@ const mapStateToProps = (state) => ({
   token: state.users.token,
   comments: state.articles.comments,
   user: state.users.user,
-  profile: state.users.profile
+  profile: state.users.profile, 
+  currentUser: state.users.currentUser
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -256,7 +266,9 @@ const mapDispatchToProps = (dispatch) => ({
   onFollowUser: (token, username) => dispatch(followUser(token, username)),
   onUnfollowUser: (token, username) => dispatch(unfollowUser(token, username)),
   onDeleteArticle: (token, slug) => dispatch(deleteArticle(token, slug)),
-  onDeleteComment: (token, slug, id) => dispatch(deleteComment(token, slug, id))
+  onDeleteComment: (token, slug, id) => dispatch(deleteComment(token, slug, id)),
+  onShowLoading: () => dispatch({ type: 'SHOW_LOADING'}),
+  onGetProfile: (username) => dispatch(getProfile(username)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(SingleArticle);
