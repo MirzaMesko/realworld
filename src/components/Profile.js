@@ -29,7 +29,7 @@ function Profile(props) {
   const [page, setPage] = useState(1);
   const [view, setView] = useState('authored')
 
-  const handleChangePage = (event, newPage) => {
+  const handleChangePage = (newPage) => {
     setPage(newPage);
   };
 
