@@ -143,7 +143,7 @@ function SingleArticle(props) {
                 to={`/@:${article[0].author.username}`}
                 className="author"
                 onClick={() =>
-                  onGetArticle(`author=${article[0].author.username}`)
+                  getUserInfo(article[0].author.username)
                 }
               >
                 {article[0].author.username}
