@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import { connect } from "react-redux";
 import { NavLink as RouterLink } from "react-router-dom";
 import {
@@ -6,6 +7,7 @@ import {
   unfavoriteArticle,
 } from "../actions/articles";
 import Article from "./Article";
+import Pagination from './Pagination';
 import { followUser, unfollowUser, getProfile } from "../actions/users";
 
 function Profile(props) {
@@ -19,8 +21,33 @@ function Profile(props) {
     profile,
     onGetProfile,
     onUnfavoriteArticle,
-    onFavoriteArticle
+    onFavoriteArticle,
+    articlesCount,
+    loading, 
+    onShowLoading
   } = props;
+  const [page, setPage] = useState(1);
+  const [view, setView] = useState('authored')
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+
+  React.useEffect(() => {
+    let offset = (page * 10) - 10; 
+    {view === 'authored' ? onGetArticle(`author=${profile.username}`, offset) : onGetArticle(`favorited=${profile.username}`, offset)}
+    ;
+  }, [page, profile, view]);
+
+  
+  
+
+  if (loading) {
+    return (
+      <div className="article-preview"></div>
+    );
+  }
 
   let button = (
     <span>
@@ -65,7 +92,7 @@ function Profile(props) {
               <img src={profile.image} className="user-img" />
               <h4>{profile.username}</h4>
               <p>{profile.bio}</p>
-              {button}
+              {token && button}
             </div>
           </div>
         </div>
@@ -78,20 +105,28 @@ function Profile(props) {
               <ul className="nav nav-pills outline-active">
                 <li className="nav-item">
                   <RouterLink
+                  isActive = {() => {
+                    return view === 'authored'
+                  }}
                     className="nav-link"
                     to={`/@:${profile.username}`}
-                    onClick={() => onGetArticle(`/?author=${profile.username}`)}
+                    onClick={() => 
+                      (onShowLoading(), onGetArticle(`author=${profile.username}`, 0)
+                    .then(() => (setView('authored'), setPage(1))))}
                   >
                     My Articles
                   </RouterLink>
                 </li>
                 <li className="nav-item">
                   <RouterLink
+                  isActive = {() => {
+                    return view === 'favorited'
+                  }}
                     className="nav-link"
                     to={`/@:${profile.username}/favorited`}
                     onClick={() =>
-                      onGetArticle(`/?favorited=${profile.username}`)
-                    }
+                      (onShowLoading(), onGetArticle(`favorited=${profile.username}`, 0)
+                      .then(() => (setView('favorited')), setPage(1)))}
                   >
                     Favorited Articles
                   </RouterLink>
@@ -105,7 +140,10 @@ function Profile(props) {
               onFavoriteArticle={onFavoriteArticle}
               onUnfavoriteArticle={onUnfavoriteArticle}
               token={token}
+              loading={loading}
+              onShowLoading={onShowLoading}
             />
+             <Pagination articlesCount={articlesCount} onChangePage={handleChangePage} page={page} />
           </div>
         </div>
       </div>
@@ -115,19 +153,22 @@ function Profile(props) {
 
 const mapStateToProps = (state) => ({
   articles: state.articles.articles,
+  articlesCount: state.articles.articlesCount,
   token: state.users.token,
   user: state.users.user,
   profile: state.users.profile,
+  loading: state.articles.loading
 });
 
 const mapDispatchToprops = (dispatch) => ({
-  onGetArticle: (param) => dispatch(getArticles(param)),
+  onGetArticle: (param, offset) => dispatch(getArticles(param, offset)),
   onFollowUser: (token, username) => dispatch(followUser(token, username)),
   onUnfollowUser: (token, username) => dispatch(unfollowUser(token, username)),
   onGetProfile: (username) => dispatch(getProfile(username)),
   onFavoriteArticle: (token, slug) => dispatch(favoriteArticle(token, slug)),
   onUnfavoriteArticle: (token, slug) =>
     dispatch(unfavoriteArticle(token, slug)),
+    onShowLoading: () => dispatch({ type: 'SHOW_LOADING'}),
 });
 
 export default connect(mapStateToProps, mapDispatchToprops)(Profile);
