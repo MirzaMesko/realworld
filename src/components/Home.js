@@ -9,23 +9,33 @@ import {
 } from "../actions/articles";
 import { getProfile } from "../actions/users";
 import Article from "./Article";
+import Pagination from './Pagination';
 
 function Home(props) {
   const {
     articles,
+    articlesCount,
     onGetArticle,
     token,
+    loading,
     tags,
+    onShowLoading,
     onGetFeed,
     onGetProfile,
     onFavoriteArticle,
     onUnfavoriteArticle,
   } = props;
   const [tag, setTag] = useState("");
+  const [page, setPage] = useState(1);
+
+  const handleChangePage = (newPage) => {
+    setPage(newPage);
+  };
 
   React.useEffect(() => {
-    onGetArticle();
-  }, []);
+    let offset = (page * 10) - 10; 
+    onGetArticle(null, offset);
+  }, [page]);
   return (
     <div className="home-page">
       <div className="banner">
@@ -45,7 +55,7 @@ function Home(props) {
                     <RouterLink
                       className="nav-link"
                       to={`/yourFeed`}
-                      onClick={() => onGetFeed(token).then(() => setTag(""))}
+                      onClick={() => (onShowLoading(), onGetFeed(token).then(() => setTag("")))}
                     >
                       Your Feed
                     </RouterLink>
@@ -53,9 +63,12 @@ function Home(props) {
                 ) : null}
                 <li className="nav-item">
                   <RouterLink
+                  isActive ={(match, location) => {
+                    return location.pathname === '/' && tag === ''
+                  }}
                     className="nav-link"
                     to={"/"}
-                    onClick={() => onGetArticle().then(() => setTag(""))}
+                    onClick={() => (onShowLoading(), onGetArticle().then(() => setTag("")))}
                   >
                     Global Feed
                   </RouterLink>
@@ -73,11 +86,15 @@ function Home(props) {
               articles={articles}
               onGetArticle={onGetArticle}
               token={token}
+              loading={loading}
               onGetProfile={onGetProfile}
               onFavoriteArticle={onFavoriteArticle}
               onUnfavoriteArticle={onUnfavoriteArticle}
+              onShowLoading={onShowLoading}
             />
+            <Pagination articlesCount={articlesCount} onChangePage={handleChangePage} page={page} />
           </div>
+          
           <div className="col-md-3">
             <div className="sidebar">
               <p>Popular Tags</p>
@@ -89,7 +106,7 @@ function Home(props) {
                       key={tag}
                       className="tag-pill tag-default"
                       onClick={() =>
-                        onGetArticle(`/?tag=${tag}`).then(() => setTag(tag))
+                        onGetArticle(`tag=${tag}`).then(() => setTag(tag))
                       }
                     >
                       {tag}
@@ -109,15 +126,18 @@ const mapStateToProps = (state) => ({
   articles: state.articles.articles,
   token: state.users.token,
   tags: state.articles.tags,
+  articlesCount: state.articles.articlesCount,
+  loading: state.articles.loading
 });
 
-const mapDispatchToprops = (dispatch) => ({
-  onGetArticle: (param) => dispatch(getArticles(param)),
+const mapDispatchToProps = (dispatch) => ({
+  onGetArticle: (param, offset) => dispatch(getArticles(param, offset)),
   onGetFeed: (token) => dispatch(getFeed(token)),
   onGetProfile: (username) => dispatch(getProfile(username)),
   onFavoriteArticle: (token, slug) => dispatch(favoriteArticle(token, slug)),
   onUnfavoriteArticle: (token, slug) =>
     dispatch(unfavoriteArticle(token, slug)),
+    onShowLoading: () => dispatch({type: 'SHOW_LOADING'})
 });
 
-export default connect(mapStateToProps, mapDispatchToprops)(Home);
+export default connect(mapStateToProps, mapDispatchToProps)(Home);
