@@ -96,7 +96,7 @@ function Settings(props) {
                 </button>
               </fieldset>
             </form>
-            <button className="btn btn-md btn-secondary pull-xs-left">
+            <button className="btn btn-outline-danger">
               <RouterLink className="nav-link" to="/" onClick={onLogout}>
                 Log out
               </RouterLink>
