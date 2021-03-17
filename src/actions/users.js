@@ -155,6 +155,7 @@ export function registrationSuccess(token, user) {
   }
 
   export function getProfile(username) {
+    getProfileSuccess([]);
     const url = 'https://conduit.productionready.io/api/profiles/' + username;
     return (dispatch) => {
       axios
@@ -175,7 +176,6 @@ export function registrationSuccess(token, user) {
       axios
       .get(url, {headers})
       .then((response) => {
-        console.log(response.data);
         dispatch(getCurrentUserSuccess(response.data.user)) 
       })
       .catch((error) => {
